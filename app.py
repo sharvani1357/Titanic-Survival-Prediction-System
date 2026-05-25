@@ -1,6 +1,6 @@
 # ==========================================
 # TITANIC SURVIVAL PREDICTION SYSTEM
-# STREAMLIT DEPLOYMENT
+# CREATIVE STREAMLIT DEPLOYMENT
 # ==========================================
 
 # ------------------------------------------
@@ -11,7 +11,9 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+
 import plotly.express as px
+import plotly.graph_objects as go
 
 from sklearn.metrics import (
     accuracy_score,
@@ -85,7 +87,7 @@ X = data[['Pclass', 'Age', 'Fare']]
 y = data['Survived']
 
 # ------------------------------------------
-# EVALUATION METRICS
+# MODEL EVALUATION METRICS
 # ------------------------------------------
 
 y_pred_prob = model.predict(X)
@@ -102,77 +104,175 @@ f1 = f1_score(y, y_pred)
 
 r2 = r2_score(y, y_pred)
 
-# ------------------------------------------
-# HEADER SECTION
-# ------------------------------------------
+# ==========================================
+# CUSTOM CSS
+# ==========================================
 
 st.markdown("""
+<style>
+
+.main {
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+}
+
+.card {
+    background: rgba(255,255,255,0.08);
+    padding: 25px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+    margin-bottom: 25px;
+}
+
+.metric-card {
+    background: rgba(255,255,255,0.07);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(255,255,255,0.1);
+}
+
+h1,h2,h3,h4 {
+    color: white;
+}
+
+p,label {
+    color: white !important;
+}
+
+.stButton>button {
+    width: 100%;
+    height: 60px;
+    border-radius: 15px;
+    border: none;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.stButton>button:hover {
+    background: linear-gradient(to right, #0072ff, #00c6ff);
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ==========================================
+# HEADER SECTION
+# ==========================================
+
+st.markdown("""
+<div class="card">
+
 # 🚢 Titanic Survival Prediction System
 
 ### Deep Learning Based Passenger Survival Prediction
-""")
 
-st.image(
-    "https://cdn-icons-png.flaticon.com/512/2972/2972285.png",
-    width=120
-)
+AI Powered Passenger Risk Analysis using Artificial Neural Networks
 
-st.divider()
+</div>
+""", unsafe_allow_html=True)
 
-# ------------------------------------------
+# ==========================================
 # PROJECT DESCRIPTION
-# ------------------------------------------
+# ==========================================
 
 st.markdown("""
+<div class="card">
+
 ## 📌 Project Description
 
-This application predicts whether a passenger
-would survive or not during the Titanic disaster
-using an Artificial Neural Network (ANN).
+This AI-powered application predicts whether a passenger
+would survive during the Titanic disaster using
+Artificial Neural Networks (ANN).
 
-The model is trained using TensorFlow/Keras
-and deployed using Streamlit Community Cloud.
-""")
+### Technologies Used:
+- TensorFlow / Keras
+- Deep Learning
+- Streamlit Deployment
+- ANN Classification
 
-st.divider()
+### Features Used:
+- Passenger Class
+- Age
+- Fare
 
-# ------------------------------------------
-# PASSENGER INPUT FORM
-# ------------------------------------------
+</div>
+""", unsafe_allow_html=True)
 
-st.markdown("## 🧾 Passenger Input Form")
+# ==========================================
+# INPUT SECTION
+# ==========================================
+
+st.markdown("""
+<div class="card">
+
+## 🧾 Passenger Input Form
+
+</div>
+""", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 
+# ------------------------------------------
+# PASSENGER CLASS
+# ------------------------------------------
+
 with col1:
 
-    pclass = st.selectbox(
-        "Passenger Class",
-        [1, 2, 3]
+    st.markdown("###  Passenger Class")
+
+    pclass_option = st.selectbox(
+        "",
+        [
+            "First Class",
+            "Second Class",
+            "Third Class"
+        ]
     )
+
+    if pclass_option == "First Class":
+        pclass = 1
+
+    elif pclass_option == "Second Class":
+        pclass = 2
+
+    else:
+        pclass = 3
+
+# ------------------------------------------
+# AGE
+# ------------------------------------------
 
 with col2:
 
+    st.markdown("###  Age")
+
     age = st.slider(
-        "Age",
+        "",
         min_value=1,
         max_value=80,
         value=24
     )
 
+# ------------------------------------------
+# FARE
+# ------------------------------------------
+
 with col3:
 
+    st.markdown("###  Fare")
+
     fare = st.number_input(
-        "Fare",
+        "",
         min_value=0.0,
         value=120.0
     )
 
-st.divider()
-
-# ------------------------------------------
+# ==========================================
 # PREPROCESSING
-# ------------------------------------------
+# ==========================================
 
 pclass_norm = (pclass - 1) / (3 - 1)
 
@@ -188,9 +288,11 @@ input_data = np.array([
     ]
 ])
 
-# ------------------------------------------
+# ==========================================
 # PREDICTION BUTTON
-# ------------------------------------------
+# ==========================================
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 if st.button("🔍 Predict Survival"):
 
@@ -198,66 +300,89 @@ if st.button("🔍 Predict Survival"):
 
     probability = prediction[0][0]
 
-    st.divider()
-
-    # --------------------------------------
-    # RESULT SECTION
-    # --------------------------------------
-
-    st.markdown("## 🎯 Prediction Result")
-
     if probability > 0.5:
-
         result = "Survived"
-
-        st.success(
-            "Passenger Likely Survived"
-        )
-
+        status = "✅ Passenger Likely Survived"
     else:
-
         result = "Not Survived"
+        status = "❌ Passenger Likely Did Not Survive"
 
-        st.error(
-            "Passenger Likely Did Not Survive"
-        )
+    # ======================================
+    # RESULT SECTION
+    # ======================================
 
-    # --------------------------------------
-    # METRICS
-    # --------------------------------------
+    st.markdown("""
+    <div class="card">
+
+    ## 🎯 Prediction Result
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.success(status)
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-
         st.metric(
             "Prediction",
             result
         )
 
     with col2:
-
         st.metric(
             "Survival Probability",
             f"{probability*100:.2f}%"
         )
 
     with col3:
-
         st.metric(
             "Confidence Score",
-            f"{max(probability, 1-probability)*100:.2f}%"
+            f"{max(probability,1-probability)*100:.2f}%"
         )
 
-    st.divider()
+    # ======================================
+    # SPEEDOMETER GAUGE
+    # ======================================
 
-    # --------------------------------------
-    # PIE CHART
-    # --------------------------------------
+    st.markdown("""
+    <div class="card">
 
-    st.markdown(
-        "## 📊 Survival Probability Visualization"
+    ## 🚦 Survival Probability Meter
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=probability * 100,
+        title={'text': "Survival Probability"},
+        gauge={
+            'axis': {'range': [0, 100]},
+            'bar': {'color': "cyan"},
+            'steps': [
+                {'range': [0, 50], 'color': "#ff4b4b"},
+                {'range': [50, 100], 'color': "#00ff99"}
+            ]
+        }
+    ))
+
+    st.plotly_chart(
+        gauge,
+        use_container_width=True
     )
+
+    # ======================================
+    # PIE CHART
+    # ======================================
+
+    st.markdown("""
+    <div class="card">
+
+    ## 🥧 Probability Distribution
+
+    </div>
+    """, unsafe_allow_html=True)
 
     labels = [
         "Survived",
@@ -269,61 +394,58 @@ if st.button("🔍 Predict Survival"):
         1 - probability
     ]
 
-    fig = px.pie(
+    pie_chart = px.pie(
         names=labels,
         values=values,
-        hole=0.4,
-        title="Passenger Survival Probability"
+        hole=0.5,
+        title="Survival vs Non-Survival"
     )
 
     st.plotly_chart(
-        fig,
+        pie_chart,
         use_container_width=True
     )
 
-    st.divider()
+    # ======================================
+    # CREATIVE EVALUATION METRICS
+    # ======================================
 
-    # --------------------------------------
-    # MODEL EVALUATION METRICS
-    # --------------------------------------
+    st.markdown("""
+    <div class="card">
 
-    st.markdown(
-        "## 📈 Model Evaluation Metrics"
-    )
+    ## 📈 Model Performance Dashboard
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col1:
+    c1, c2, c3, c4, c5 = st.columns(5)
 
+    with c1:
         st.metric(
-            "Accuracy",
+            "🎯 Accuracy",
             f"{accuracy*100:.2f}%"
         )
 
-    with col2:
-
+    with c2:
         st.metric(
-            "Precision",
+            "📌 Precision",
             f"{precision*100:.2f}%"
         )
 
-    with col3:
-
+    with c3:
         st.metric(
-            "Recall",
+            "🔁 Recall",
             f"{recall*100:.2f}%"
         )
 
-    with col4:
-
+    with c4:
         st.metric(
-            "F1 Score",
+            "⚖️ F1 Score",
             f"{f1:.2f}"
         )
 
-    with col5:
-
+    with c5:
         st.metric(
-            "R2 Score",
+            "📊 R2 Score",
             f"{r2:.2f}"
         )
